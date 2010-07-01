@@ -2,10 +2,6 @@ package org.advin.engine;
 
 // It's just simple yet
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-
 public class SysTools
 {
     public void logMsg(String message) { System.out.println(message); };

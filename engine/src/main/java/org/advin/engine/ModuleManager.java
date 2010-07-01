@@ -3,13 +3,11 @@ package org.advin.engine;
 import org.advin.library.interfaces.IAdvinModule;
 import org.advin.library.interfaces.IModuleInfo;
 import org.advin.library.interfaces.AdvinModuleClass;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.jar.Attributes;
@@ -93,7 +91,7 @@ public class ModuleManager
      * @param jarFile file which contain class
      * @param className class name in module
      * @return loaded class of module
-     * @throws java.lang.ClassNotFoundException
+     * @throws java.lang.ClassNotFoundException throws class not found exception
      */
     private Class loadClassFromJAR(URL jarFile, String className) throws Exception
     {
@@ -115,7 +113,10 @@ public class ModuleManager
                 { sysTools.logMsg("[!] Can't load class "+ className +" from "+ jarFile.getFile() +" : "+ exc.getMessage()); };
             };
         };
-        if (_class.isAnnotationPresent(AdvinModuleClass.class)) sysTools.logMsg("GOT ANNOTATION!!!");
+        if ((_class != null) && (_class.isAnnotationPresent(AdvinModuleClass.class)))
+        {
+            sysTools.logMsg("GOT ANNOTATION!!!");
+        };
         return _class;
     };
 
@@ -172,10 +173,9 @@ public class ModuleManager
             Manifest manifest = jarfile.getManifest();
             Attributes jarAttr = manifest.getMainAttributes();
 
-            Iterator it = jarAttr.keySet().iterator();
-            while (it.hasNext())
+            for (Object KeySetItem : jarAttr.keySet())
             {
-                Attributes.Name name = (Attributes.Name)it.next();
+                Attributes.Name name = (Attributes.Name) KeySetItem;
                 jarProps.put(name.toString(), jarAttr.getValue(name));
             };
             //jarProps.list(System.out); // DEBUG OUTPUT
