@@ -1,4 +1,4 @@
-package org.advin.engine;
+package org.advin.engine.module;
 
 import org.advin.library.interfaces.IModuleInfo;
 import org.advin.library.interfaces.IAdvinModule;

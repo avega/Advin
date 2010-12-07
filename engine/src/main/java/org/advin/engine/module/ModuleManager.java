@@ -1,5 +1,7 @@
-package org.advin.engine;
+package org.advin.engine.module;
 
+import org.advin.engine.sys.SysInfo;
+import org.advin.engine.sys.SysTools;
 import org.advin.library.interfaces.IAdvinModule;
 import org.advin.library.interfaces.IModuleInfo;
 import org.advin.library.interfaces.AdvinModuleClass;
@@ -8,6 +10,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.jar.Attributes;
@@ -32,29 +35,64 @@ public class ModuleManager
     {
         modFiles.clear();
         String modDir = SysTools.updateFileSeporator(SysInfo.getUserDir() + SysInfo.getFileSeparator() + aPath);
-        File[] dirFiles = null;
+        File[] dirFiles;
         
         sysTools.logMsg("[>] Searching modules in: "+ modDir);
-        try
-        { dirFiles = (new File(modDir).listFiles()); }
-        catch (Exception exc) { sysTools.logMsg(exc.getMessage()); };
-        
-        if (!(dirFiles == null || dirFiles.length == 0))
+        dirFiles = findAllJarFiles(modDir);
+
+        if (dirFiles != null)
         {
             for (File someFile: dirFiles)
             {
-                if (someFile.getName().toLowerCase().endsWith(".jar"))
-                {
-                    getJarProperties(someFile.getPath());
-                    try
-                    { if (loadInfoClassFromJAR(someFile.toURI().toURL()) != null) modFiles.add(someFile.toURI().toURL()); }
-                    catch (Exception vExc)
-                    { sysTools.logMsg("Can't load file: "+ someFile.getName() +" - "+ vExc.getMessage()); };
-                };
+                getJarProperties(someFile.getPath());
+                try
+                { if (loadInfoClassFromJAR(someFile.toURI().toURL()) != null) { modFiles.add(someFile.toURI().toURL()); }; }
+                catch (Exception vExc)
+                { sysTools.logMsg("Can't load file: "+ someFile.getName() +" - "+ vExc.getMessage()); };
             };
-        };
+        }
+        else
+        { sysTools.logMsg("Directory not exists: "+ modDir); };
 
         return modFiles.size();
+    };
+
+    /**
+     * Goes through all subdirs from <code>startDir</code> as the start level and collect all files that have .jar extension.
+     * @param startDir start point to search JAR files.
+     * @return List of JAR files or <code>null</code> if no files founded.
+     */
+    private File[] findAllJarFiles(String startDir)
+    {
+        File[] dfiles;
+        ArrayList<File> ffiles = new ArrayList<File>();
+        try
+        {
+            dfiles = (new File(startDir).listFiles());
+            for (File someFile: dfiles)
+            {
+                if (someFile.isFile())
+                {
+                    if (someFile.getName().toLowerCase().endsWith(".jar")) { ffiles.add(someFile); };
+                }
+                else if (someFile.isDirectory())
+                {
+                    File[] subJars = findAllJarFiles(someFile.getPath());
+                    ffiles.addAll(Arrays.asList(subJars));
+                };
+            };
+        }
+        catch (Exception exc) { sysTools.logMsg("JAR files search error: "+ exc.getMessage()); };
+
+        File[] jars = new File[ffiles.size()];
+        int i = 0;
+        for (File f : ffiles)
+        {
+            jars[i] = f;
+            i++;
+        };
+
+        return jars;
     };
 
     /**
@@ -140,7 +178,7 @@ public class ModuleManager
                     modList.add(new ModuleContainer(aClass, info));
                     break;
             };
-        } catch (Exception exc) { System.out.println(exc.getMessage()); };
+        } catch (Exception exc) { sysTools.logMsg(exc.getMessage()); };
     };
 
     public void loadModules()
@@ -179,7 +217,7 @@ public class ModuleManager
                 jarProps.put(name.toString(), jarAttr.getValue(name));
             };
             //jarProps.list(System.out); // DEBUG OUTPUT
-        } catch (IOException e) { System.out.println(e.getMessage()); };
+        } catch (IOException e) { sysTools.logMsg(e.getMessage()); };
 
         return jarProps;
     };

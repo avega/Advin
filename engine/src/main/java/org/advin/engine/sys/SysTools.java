@@ -1,9 +1,13 @@
-package org.advin.engine;
+package org.advin.engine.sys;
 
 // It's just simple yet
 
 public class SysTools
 {
+    /**
+     * Just invoke System.out.println(message)
+     * @param message the message for output
+     */
     public void logMsg(String message) { System.out.println(message); };
 
     /**

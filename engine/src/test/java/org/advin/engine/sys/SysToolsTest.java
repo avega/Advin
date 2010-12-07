@@ -1,11 +1,11 @@
-package org.advin.engine;
+package org.advin.engine.sys;
 
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.Assert;
 
 public class SysToolsTest
 {
@@ -38,6 +38,6 @@ public class SysToolsTest
         
         String result = SysTools.updateFileSeporator(aPath);
 
-        assertEquals(expResult, result);
+        Assert.assertEquals(expResult, result);
     };
 };

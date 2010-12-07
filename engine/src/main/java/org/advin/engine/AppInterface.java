@@ -1,5 +1,6 @@
 package org.advin.engine;
 
+import org.advin.engine.module.ModuleContainer;
 import org.advin.library.interfaces.IAppInterface;
 import org.advin.library.interfaces.IAdvinModule;
 

@@ -1,12 +1,12 @@
-package org.advin.engine;
+package org.advin.engine.module;
 
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.Assert;
 import java.lang.reflect.Method;
-import static org.junit.Assert.*;
 
 public class ModuleManagerTest
 {
@@ -26,6 +26,7 @@ public class ModuleManagerTest
 
     /**
      * Test of reloadModules method, of class ModuleManager.
+     * @throws Exception on some error
      */
     @Test
     public void reloadModules() throws Exception
@@ -43,13 +44,13 @@ public class ModuleManagerTest
             {
                 final Object params[] = {aPath};
                 m.setAccessible(true);
-                
+
                 Object ret = m.invoke(instance, params);
                 if (ret != null) result = (Integer) ret;
             };
         };
-        
-        assertEquals(expResult, result);
+
+        Assert.assertEquals(expResult, result);
     };
 
     /**
