@@ -4,7 +4,6 @@ import org.advin.engine.sys.SysInfo;
 import org.advin.engine.sys.SysTools;
 import org.advin.library.interfaces.IAdvinModule;
 import org.advin.library.interfaces.IModuleInfo;
-import org.advin.library.interfaces.AdvinModuleClass;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -38,13 +37,12 @@ public class ModuleManager
         File[] dirFiles;
         
         sysTools.logMsg("[>] Searching modules in: "+ modDir);
-        dirFiles = findAllJarFiles(modDir);
+        dirFiles = findAdvinModFiles(modDir);
 
         if (dirFiles != null)
         {
             for (File someFile: dirFiles)
             {
-                getJarProperties(someFile.getPath());
                 try
                 { if (loadInfoClassFromJAR(someFile.toURI().toURL()) != null) { modFiles.add(someFile.toURI().toURL()); }; }
                 catch (Exception vExc)
@@ -62,22 +60,22 @@ public class ModuleManager
      * @param startDir start point to search JAR files.
      * @return List of JAR files or <code>null</code> if no files founded.
      */
-    private File[] findAllJarFiles(String startDir)
+    private File[] findAdvinModFiles(String startDir)
     {
-        File[] dfiles;
         ArrayList<File> ffiles = new ArrayList<File>();
         try
         {
-            dfiles = (new File(startDir).listFiles());
+            File[] dfiles = (new File(startDir).listFiles());
             for (File someFile: dfiles)
             {
                 if (someFile.isFile())
                 {
-                    if (someFile.getName().toLowerCase().endsWith(".jar")) { ffiles.add(someFile); };
+                    if (someFile.getName().toLowerCase().endsWith(".jar") && getJarProperties(someFile.getPath()).containsKey("AIModule-Class"))
+                        { ffiles.add(someFile); };
                 }
                 else if (someFile.isDirectory())
                 {
-                    File[] subJars = findAllJarFiles(someFile.getPath());
+                    File[] subJars = findAdvinModFiles(someFile.getPath());
                     ffiles.addAll(Arrays.asList(subJars));
                 };
             };
@@ -131,6 +129,7 @@ public class ModuleManager
      * @return loaded class of module
      * @throws java.lang.ClassNotFoundException throws class not found exception
      */
+    //@SuppressWarnings("unchecked")
     private Class loadClassFromJAR(URL jarFile, String className) throws Exception
     {
         URLClassLoader loader = null;
@@ -151,10 +150,7 @@ public class ModuleManager
                 { sysTools.logMsg("[!] Can't load class "+ className +" from "+ jarFile.getFile() +" : "+ exc.getMessage()); };
             };
         };
-        if ((_class != null) && (_class.isAnnotationPresent(AdvinModuleClass.class)))
-        {
-            sysTools.logMsg("GOT ANNOTATION!!!");
-        };
+        //if ((_class != null) && (_class.isAnnotationPresent(AdvinModuleClass.class))) { sysTools.logMsg("GOT ANNOTATION!!!"); };
         return _class;
     };
 
