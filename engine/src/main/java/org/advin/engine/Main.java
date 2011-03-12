@@ -13,8 +13,10 @@ public class Main
 
     public static void main(String[] args)
     {
+        //sysTools.logMsg("[?] CLASSPATH: "+ sysTools.getCP());
         // Load module files
-        modManager.modPath = "modules";
+        modManager.modPath = sysTools.getArgValue(args, "modpath");
+        if (modManager.modPath.isEmpty()) { modManager.modPath = "modules"; };
         modManager.loadModules();
         
         if (!modManager.modList.isEmpty())
@@ -23,22 +25,22 @@ public class Main
             System.out.println("");
             for (ModuleContainer aModList: modManager.modList)
             {
-                sysTools.logMsg("[*] Module: " + aModList.moduleInfo.getModuleName() +" ver. "+ aModList.moduleInfo.getModuleVersion());
-                sysTools.logMsg("[*] " + aModList.moduleInfo.getModuleFullName() +" (" + aModList.moduleInfo.getModuleInfo() +")");
-                sysTools.logMsg("[*] Visual: " + aModList.moduleInfo.isVisual() +" / Type: " + aModList.moduleInfo.getModuleType());
+                sysTools.logMsg("[*] Module: " + aModList.getModuleName() +" ver. "+ aModList.getModuleVersion());
+                sysTools.logMsg("[*] " + aModList.getModuleName() +" (" + aModList.getModuleInfo() +")");
+                sysTools.logMsg("[*] Visual: " + aModList.isVisual() +" / Type: " + aModList.getModuleType());
                 sysTools.logMsg("[*] ---");
             };
             // Init modules
             for (ModuleContainer aModList: modManager.modList)
             {
-                sysTools.logMsg("[!] Init: " + aModList.moduleInfo.getModuleName());
+                sysTools.logMsg("[!] Init: " + aModList.getModuleName());
                 aModList.moduleClass.initModule(appIFace);
             };
             sysTools.logMsg("[!] ---");
             // Start modules
             for (ModuleContainer aModList: modManager.modList)
             {
-                sysTools.logMsg("[>] Start: " + aModList.moduleInfo.getModuleName());
+                sysTools.logMsg("[>] Start: " + aModList.getModuleName());
                 aModList.moduleClass.startModule();
             };
             sysTools.logMsg("[>] ---");
@@ -63,7 +65,7 @@ public class Main
             // Done modules
             for (ModuleContainer aModList: modManager.modList)
             {
-                sysTools.logMsg("[.] Done: " + aModList.moduleInfo.getModuleName());
+                sysTools.logMsg("[.] Done: " + aModList.getModuleName());
                 aModList.moduleClass.doneModule();
             };
             sysTools.logMsg("[.] ---");

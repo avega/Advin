@@ -59,7 +59,6 @@ public class ModuleManagerTest
     /*@Test
     public void addToList() {
         System.out.println("addToList");
-        IModuleInfo info = null;
         Class aClass = null;
         ModuleManager instance = new ModuleManager();
         instance.addToList(info, aClass);

@@ -6,5 +6,4 @@ public interface IAdvinModule
     void startModule();
     void doneModule();
     boolean isActive();
-    IModuleInfo getModuleInfo();
 };

@@ -2,15 +2,12 @@ package org.advin.modules.netserver;
 
 import org.advin.library.interfaces.IAdvinModule;
 import org.advin.library.interfaces.IAppInterface;
-import org.advin.library.interfaces.IModuleInfo;
 import java.net.Socket;
-import org.advin.modules.ModuleInfo;
 
 public class NetServer implements IAdvinModule
 {
     public int serverPort     = 1976;
     public ServerDC netServer = null;
-    private IModuleInfo moduleInfo = new ModuleInfo();
     public IAppInterface appInterface = null;
     private boolean Active = false;
 
@@ -41,9 +38,6 @@ public class NetServer implements IAdvinModule
         catch (Exception e)
         { appInterface.logMsg(e.getMessage()); };
     }
-
-    @Override
-    public IModuleInfo getModuleInfo() { return moduleInfo; };
 
     @Override
     public boolean isActive() { return Active; };

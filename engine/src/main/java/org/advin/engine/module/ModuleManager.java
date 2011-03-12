@@ -2,8 +2,8 @@ package org.advin.engine.module;
 
 import org.advin.engine.sys.SysInfo;
 import org.advin.engine.sys.SysTools;
+import org.advin.library.interfaces.AIModuleType;
 import org.advin.library.interfaces.IAdvinModule;
-import org.advin.library.interfaces.IModuleInfo;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -19,7 +19,6 @@ import java.util.jar.Manifest;
 public class ModuleManager
 {
     public String modPath = "modules";
-    public String modInfoClassName = "org.advin.modules.ModuleInfo";
     public List<ModuleContainer> modList = null; // List of plugin modules
     public List<URL> modFiles = null;            // List of module files
     public SysTools sysTools = new SysTools();
@@ -35,7 +34,13 @@ public class ModuleManager
         modFiles.clear();
         String modDir = SysTools.updateFileSeporator(SysInfo.getUserDir() + SysInfo.getFileSeparator() + aPath);
         File[] dirFiles;
-        
+        File fmd = new File(modDir);
+
+        try
+        {
+			modDir = fmd.getCanonicalPath();
+		} catch (IOException e) { e.printStackTrace(); };
+
         sysTools.logMsg("[>] Searching modules in: "+ modDir);
         dirFiles = findAdvinModFiles(modDir);
 
@@ -44,7 +49,7 @@ public class ModuleManager
             for (File someFile: dirFiles)
             {
                 try
-                { if (loadInfoClassFromJAR(someFile.toURI().toURL()) != null) { modFiles.add(someFile.toURI().toURL()); }; }
+                { if (getJarProperties(someFile.getPath()).containsKey("AIModule-Class") ) { modFiles.add(someFile.toURI().toURL()); }; }
                 catch (Exception vExc)
                 { sysTools.logMsg("Can't load file: "+ someFile.getName() +" - "+ vExc.getMessage()); };
             };
@@ -66,18 +71,21 @@ public class ModuleManager
         try
         {
             File[] dfiles = (new File(startDir).listFiles());
-            for (File someFile: dfiles)
+            if (dfiles != null)
             {
-                if (someFile.isFile())
-                {
-                    if (someFile.getName().toLowerCase().endsWith(".jar") && getJarProperties(someFile.getPath()).containsKey("AIModule-Class"))
-                        { ffiles.add(someFile); };
-                }
-                else if (someFile.isDirectory())
-                {
-                    File[] subJars = findAdvinModFiles(someFile.getPath());
-                    ffiles.addAll(Arrays.asList(subJars));
-                };
+	            for (File someFile: dfiles)
+	            {
+	                if (someFile.isFile())
+	                {
+						if (someFile.getName().toLowerCase().endsWith(".jar") && getJarProperties(someFile.getPath()).containsKey("AIModule-Class"))
+						 	{ ffiles.add(someFile); };
+	                }
+	                else if (someFile.isDirectory())
+	                {
+	                    File[] subJars = findAdvinModFiles(someFile.getPath());
+	                    ffiles.addAll(Arrays.asList(subJars));
+	                };
+	            };
             };
         }
         catch (Exception exc) { sysTools.logMsg("JAR files search error: "+ exc.getMessage()); };
@@ -94,42 +102,13 @@ public class ModuleManager
     };
 
     /**
-     * Load module info class from given JAR file
-     * @param aJARFile file which contain module info class
-     * @return Info class from module as <code>IModuleInfo</code> interface
-     */
-    private IModuleInfo loadInfoClassFromJAR(URL aJARFile)
-    {
-        Class modInfoClass = null;
-        IModuleInfo modInfo = null;
-        
-        try
-        { modInfoClass = loadClassFromJAR(aJARFile, modInfoClassName); }
-        catch (Exception exc)
-        { sysTools.logMsg("[!] Error load "+ modInfoClassName +": " + exc.getMessage()); };
-
-        if (modInfoClass != null)
-        {
-            // Create module info object
-            try
-            {
-                Object _obj = modInfoClass.newInstance();
-                modInfo = (IModuleInfo) _obj;
-            }
-            catch (Exception exc) { sysTools.logMsg("[!] Can't cast class to IModuleInfo interface\n" + exc.getMessage()); };
-        };
-        
-        return modInfo;
-    };
-
-    /**
      * Load module class from given JAR file
      * @param jarFile file which contain class
      * @param className class name in module
      * @return loaded class of module
      * @throws java.lang.ClassNotFoundException throws class not found exception
      */
-    //@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
     private Class loadClassFromJAR(URL jarFile, String className) throws Exception
     {
         URLClassLoader loader = null;
@@ -150,24 +129,24 @@ public class ModuleManager
                 { sysTools.logMsg("[!] Can't load class "+ className +" from "+ jarFile.getFile() +" : "+ exc.getMessage()); };
             };
         };
-        //if ((_class != null) && (_class.isAnnotationPresent(AdvinModuleClass.class))) { sysTools.logMsg("GOT ANNOTATION!!!"); };
-        return _class;
+		//if ((_class != null) && (_class.isAnnotationPresent(AdvinModuleClass.class))) { sysTools.logMsg("GOT ANNOTATION!!!"); };
+		return _class;
     };
 
-    private void addToList(IModuleInfo info, Class aClass)
+    private void addToList(Properties info, Class aClass)
     {
         try
         {
             // no difference yet, just add
-            switch (info.getModuleType())
+            switch (AIModuleType.valueOf(info.getProperty("AIModule-Type", "Module")))
             {
-                case DataSourceMod:
+                case DataSource:
                     modList.add(new ModuleContainer((IAdvinModule) aClass.newInstance(), info));
                     break;
-                case NetWorkMod:
+                case NetWork:
                     modList.add(new ModuleContainer((IAdvinModule) aClass.newInstance(), info));
                     break;
-                case GUIMod:
+                case GUI:
                     modList.add(new ModuleContainer((IAdvinModule) aClass.newInstance(), info));
                     break;
                 default:
@@ -183,16 +162,16 @@ public class ModuleManager
         {
             for (URL modFile: modFiles)
             {
-                IModuleInfo modInfo = loadInfoClassFromJAR(modFile);
+                Properties modInfo = getJarProperties(modFile.getFile());
                 if (modInfo != null)
                 {
                     try
                     {
-                        Class _class = loadClassFromJAR(modFile, modInfo.getModuleClass());
+                        Class _class = loadClassFromJAR(modFile, modInfo.getProperty("AIModule-Class", ""));
                         if (_class != null) { addToList(modInfo, _class); };
                     }
                     catch (Exception exc)
-                    { sysTools.logMsg("[!] Error load module class " + modInfo.getModuleClass() + " : " + exc.getMessage()); };
+                    { sysTools.logMsg("[!] Error load module class " + modInfo.getProperty("AIModule-Class", "") + " : " + exc.getMessage()); };
                 };
             };
         } else { sysTools.logMsg("No modules found."); };

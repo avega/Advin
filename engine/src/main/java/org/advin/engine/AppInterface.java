@@ -17,7 +17,7 @@ public class AppInterface implements IAppInterface
     {
         for(ModuleContainer modCont: Main.modManager.modList)
         {
-            if (modCont.moduleInfo.getModuleName().equalsIgnoreCase(name)) return modCont.moduleClass;
+            if (modCont.getModuleClassName().equalsIgnoreCase(name)) return modCont.moduleClass;
         };
         return null;
     };
