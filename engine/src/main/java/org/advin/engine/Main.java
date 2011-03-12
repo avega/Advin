@@ -18,7 +18,7 @@ public class Main
         modManager.modPath = sysTools.getArgValue(args, "modpath");
         if (modManager.modPath.isEmpty()) { modManager.modPath = "modules"; };
         modManager.loadModules();
-        
+
         if (!modManager.modList.isEmpty())
         {
             // Check modules list

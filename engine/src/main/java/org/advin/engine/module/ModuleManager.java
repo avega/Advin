@@ -38,8 +38,8 @@ public class ModuleManager
 
         try
         {
-			modDir = fmd.getCanonicalPath();
-		} catch (IOException e) { e.printStackTrace(); };
+            modDir = fmd.getCanonicalPath();
+        } catch (IOException e) { e.printStackTrace(); };
 
         sysTools.logMsg("[>] Searching modules in: "+ modDir);
         dirFiles = findAdvinModFiles(modDir);
@@ -73,19 +73,19 @@ public class ModuleManager
             File[] dfiles = (new File(startDir).listFiles());
             if (dfiles != null)
             {
-	            for (File someFile: dfiles)
-	            {
-	                if (someFile.isFile())
-	                {
-						if (someFile.getName().toLowerCase().endsWith(".jar") && getJarProperties(someFile.getPath()).containsKey("AIModule-Class"))
-						 	{ ffiles.add(someFile); };
-	                }
-	                else if (someFile.isDirectory())
-	                {
-	                    File[] subJars = findAdvinModFiles(someFile.getPath());
-	                    ffiles.addAll(Arrays.asList(subJars));
-	                };
-	            };
+                for (File someFile: dfiles)
+                {
+                    if (someFile.isFile())
+                    {
+                        if (someFile.getName().toLowerCase().endsWith(".jar") && getJarProperties(someFile.getPath()).containsKey("AIModule-Class"))
+                            { ffiles.add(someFile); };
+                    }
+                    else if (someFile.isDirectory())
+                    {
+                        File[] subJars = findAdvinModFiles(someFile.getPath());
+                        ffiles.addAll(Arrays.asList(subJars));
+                    };
+                };
             };
         }
         catch (Exception exc) { sysTools.logMsg("JAR files search error: "+ exc.getMessage()); };
@@ -108,7 +108,7 @@ public class ModuleManager
      * @return loaded class of module
      * @throws java.lang.ClassNotFoundException throws class not found exception
      */
-	//@SuppressWarnings("unchecked")
+    //@SuppressWarnings("unchecked")
     private Class loadClassFromJAR(URL jarFile, String className) throws Exception
     {
         URLClassLoader loader = null;
@@ -129,8 +129,8 @@ public class ModuleManager
                 { sysTools.logMsg("[!] Can't load class "+ className +" from "+ jarFile.getFile() +" : "+ exc.getMessage()); };
             };
         };
-		//if ((_class != null) && (_class.isAnnotationPresent(AdvinModuleClass.class))) { sysTools.logMsg("GOT ANNOTATION!!!"); };
-		return _class;
+        //if ((_class != null) && (_class.isAnnotationPresent(AdvinModuleClass.class))) { sysTools.logMsg("GOT ANNOTATION!!!"); };
+        return _class;
     };
 
     private void addToList(Properties info, Class aClass)
