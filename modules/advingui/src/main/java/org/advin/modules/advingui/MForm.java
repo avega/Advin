@@ -1,0 +1,182 @@
+package org.advin.modules.advingui;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.net.URL;
+
+public class MForm implements ActionListener {
+
+    public JFrame frame;
+    private boolean started = false;
+    protected JMenu fileMenu, helpMenu;
+    protected JMenuItem openMI, optionsMI, quitMI;
+    protected JMenuItem docsMI, supportMI, aboutMI;
+    final static int MENU_MASK = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+    public static boolean MAC_OS_X = (System.getProperty("os.name").toLowerCase().startsWith("mac os x"));
+
+    public boolean isActive() {
+        return (!started || (frame != null && frame.isVisible()));
+    }
+
+    public static void main(String[] args) {
+    }
+
+    public void start() {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                activateForm();
+                started = true;
+            }
+        });
+    }
+
+    public boolean quit() {
+        int option = JOptionPane.showConfirmDialog(null, "Are you sure you want to quit?", "Quit?", JOptionPane.YES_NO_OPTION);
+        if (option == JOptionPane.YES_OPTION) {
+            frame.setVisible(false);
+            frame.dispose();
+        }
+        ;
+        return false;
+    }
+
+    public void activateForm() {
+        if (System.getProperty("os.name").startsWith("Mac")) {
+            System.setProperty("apple.laf.useScreenMenuBar", "true");
+            // System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Advin GUI"); // This must be in main programm thread
+            try {
+                OSXAdapter.setQuitHandler(this, getClass().getDeclaredMethod("quit", (Class[]) null));
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        frame = new JFrame("Advin GUI Form");
+        frame.setContentPane(new MForm().mainPanel);
+        frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+        frame.setPreferredSize(new Dimension(600, 500));
+        int i = (Toolkit.getDefaultToolkit().getScreenSize().width / 2) - (frame.getPreferredSize().width / 2);
+        int j = (Toolkit.getDefaultToolkit().getScreenSize().height / 2) - (frame.getPreferredSize().height / 2);
+        frame.setLocation(i, j);
+        addMenus();
+
+        final URL url = ClassLoader.getSystemResource("resources/Marvin.png");
+        if (url != null)
+        {
+            frame.setIconImage(Toolkit.getDefaultToolkit().getImage(url));
+
+//            try
+//                { java.awt.SystemTray.getSystemTray().add(new java.awt.TrayIcon(java.awt.Toolkit.getDefaultToolkit().getImage(url))); }
+//            catch (AWTException ex)
+//                { ex.printStackTrace(); };
+        };
+
+        frame.pack();
+        frame.setVisible(true);
+    }
+
+    public void addMenus() {
+        //JMenu fileMenu = new JMenu("File");
+        JMenuBar mainMenuBar = new JMenuBar();
+        mainMenuBar.add(fileMenu = new JMenu("File"));
+        fileMenu.add(openMI = new JMenuItem("Open..."));
+        openMI.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, MENU_MASK));
+        openMI.addActionListener(this);
+        // Quit/prefs menu items are provided on Mac OS X; only add your own on other platforms
+        if (!MAC_OS_X) {
+            fileMenu.addSeparator();
+            fileMenu.add(optionsMI = new JMenuItem("Options"));
+            optionsMI.addActionListener(this);
+
+            fileMenu.addSeparator();
+            fileMenu.add(quitMI = new JMenuItem("Quit"));
+            quitMI.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, MENU_MASK));
+            quitMI.addActionListener(this);
+        }
+        mainMenuBar.add(helpMenu = new JMenu("Help"));
+        helpMenu.add(docsMI = new JMenuItem("Online Documentation"));
+        helpMenu.addSeparator();
+        helpMenu.add(supportMI = new JMenuItem("Technical Support"));
+        // About menu item is provided on Mac OS X; only add your own on other platforms
+        if (!MAC_OS_X) {
+            helpMenu.addSeparator();
+            helpMenu.add(aboutMI = new JMenuItem("About OSXAdapter"));
+            aboutMI.addActionListener(this);
+        }
+        frame.setJMenuBar(mainMenuBar);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        Object source = e.getSource();
+        if (source == quitMI) {
+            quit();
+        } else if (source == optionsMI) {
+            //preferences();
+        } else if (source == aboutMI) {
+            //about();
+        }
+    }
+
+    private JPanel mainPanel;
+    private JPanel TopPanel;
+    private JPanel LeftPanel;
+    private JPanel RightPanel;
+    private JPanel BottomPanel;
+    private JPanel CenterPanel;
+    private JLabel topLabel;
+    private JButton button1;
+
+    {
+// GUI initializer generated by IntelliJ IDEA GUI Designer
+// >>> IMPORTANT!! <<<
+// DO NOT EDIT OR ADD ANY CODE HERE!
+        $$$setupUI$$$();
+    }
+
+    /**
+     * Method generated by IntelliJ IDEA GUI Designer
+     * >>> IMPORTANT!! <<<
+     * DO NOT edit this method OR call it in your code!
+     *
+     * @noinspection ALL
+     */
+    private void $$$setupUI$$$() {
+        mainPanel = new JPanel();
+        mainPanel.setLayout(new BorderLayout(0, 0));
+        TopPanel = new JPanel();
+        TopPanel.setLayout(new BorderLayout(0, 0));
+        TopPanel.setBackground(new Color(-3355444));
+        mainPanel.add(TopPanel, BorderLayout.NORTH);
+        topLabel = new JLabel();
+        topLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        topLabel.setHorizontalAlignment(0);
+        topLabel.setText("Advin GUI");
+        TopPanel.add(topLabel, BorderLayout.CENTER);
+        LeftPanel = new JPanel();
+        LeftPanel.setLayout(new BorderLayout(0, 0));
+        mainPanel.add(LeftPanel, BorderLayout.WEST);
+        RightPanel = new JPanel();
+        RightPanel.setLayout(new BorderLayout(0, 0));
+        mainPanel.add(RightPanel, BorderLayout.EAST);
+        BottomPanel = new JPanel();
+        BottomPanel.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 5));
+        mainPanel.add(BottomPanel, BorderLayout.SOUTH);
+        button1 = new JButton();
+        button1.setText("Button");
+        BottomPanel.add(button1);
+        CenterPanel = new JPanel();
+        CenterPanel.setLayout(new BorderLayout(0, 0));
+        mainPanel.add(CenterPanel, BorderLayout.CENTER);
+    }
+
+    /**
+     * @noinspection ALL
+     */
+    public JComponent $$$getRootComponent$$$() {
+        return mainPanel;
+    }
+}

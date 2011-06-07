@@ -41,7 +41,7 @@ public class ModuleManager
             modDir = fmd.getCanonicalPath();
         } catch (IOException e) { e.printStackTrace(); };
 
-        sysTools.logMsg("[>] Searching modules in: "+ modDir);
+        sysTools.logMsg(">", "Searching modules in: "+ modDir);
         dirFiles = findAdvinModFiles(modDir);
 
         if (dirFiles != null)
@@ -51,11 +51,11 @@ public class ModuleManager
                 try
                 { if (getJarProperties(someFile.getPath()).containsKey("AIModule-Class") ) { modFiles.add(someFile.toURI().toURL()); }; }
                 catch (Exception vExc)
-                { sysTools.logMsg("Can't load file: "+ someFile.getName() +" - "+ vExc.getMessage()); };
+                { sysTools.logMsg("E", "Can't load file: "+ someFile.getName() +" - "+ vExc.getMessage()); };
             };
         }
         else
-        { sysTools.logMsg("Directory not exists: "+ modDir); };
+        { sysTools.logMsg("E", "Directory not exists: "+ modDir); };
 
         return modFiles.size();
     };
@@ -88,7 +88,7 @@ public class ModuleManager
                 };
             };
         }
-        catch (Exception exc) { sysTools.logMsg("JAR files search error: "+ exc.getMessage()); };
+        catch (Exception exc) { sysTools.logMsg("E", "JAR files search error: "+ exc.getMessage()); };
 
         File[] jars = new File[ffiles.size()];
         int i = 0;
@@ -119,14 +119,14 @@ public class ModuleManager
             try
             { loader = new URLClassLoader(new URL[] {jarFile}); }
             catch (Exception exc)
-            { sysTools.logMsg("[!] Error create ClassLoader for class '"+ className +"' in file - '"+ jarFile.getFile() +"' : "+ exc.getMessage()); };
+            { sysTools.logMsg("E", "Error create ClassLoader for class '"+ className +"' in file - '"+ jarFile.getFile() +"' : "+ exc.getMessage()); };
 
             if (loader != null)
             {
                 try
                 { _class = loader.loadClass(className); }
                 catch (Exception exc)
-                { sysTools.logMsg("[!] Can't load class "+ className +" from "+ jarFile.getFile() +" : "+ exc.getMessage()); };
+                { sysTools.logMsg("E", "Can't load class "+ className +" from "+ jarFile.getFile() +" : "+ exc.getMessage()); };
             };
         };
         //if ((_class != null) && (_class.isAnnotationPresent(AdvinModuleClass.class))) { sysTools.logMsg("GOT ANNOTATION!!!"); };
@@ -140,20 +140,12 @@ public class ModuleManager
             // no difference yet, just add
             switch (AIModuleType.valueOf(info.getProperty("AIModule-Type", "Module")))
             {
-                case DataSource:
-                    modList.add(new ModuleContainer((IAdvinModule) aClass.newInstance(), info));
-                    break;
-                case NetWork:
-                    modList.add(new ModuleContainer((IAdvinModule) aClass.newInstance(), info));
-                    break;
-                case GUI:
-                    modList.add(new ModuleContainer((IAdvinModule) aClass.newInstance(), info));
-                    break;
-                default:
-                    modList.add(new ModuleContainer(aClass, info));
-                    break;
+                case DataSource: modList.add(new ModuleContainer((IAdvinModule) aClass.newInstance(), info)); break;
+                case NetWork:    modList.add(new ModuleContainer((IAdvinModule) aClass.newInstance(), info)); break;
+                case GUI:        modList.add(new ModuleContainer((IAdvinModule) aClass.newInstance(), info)); break;
+                default:         modList.add(new ModuleContainer(aClass, info)); break;
             };
-        } catch (Exception exc) { sysTools.logMsg(exc.getMessage()); };
+        } catch (Exception exc) { sysTools.logMsg("E", exc.getMessage()); };
     };
 
     public void loadModules()
@@ -171,10 +163,10 @@ public class ModuleManager
                         if (_class != null) { addToList(modInfo, _class); };
                     }
                     catch (Exception exc)
-                    { sysTools.logMsg("[!] Error load module class " + modInfo.getProperty("AIModule-Class", "") + " : " + exc.getMessage()); };
+                    { sysTools.logMsg("E", "Error load module class " + modInfo.getProperty("AIModule-Class", "") + " : " + exc.getMessage()); };
                 };
             };
-        } else { sysTools.logMsg("No modules found."); };
+        } else { sysTools.logMsg("E", "No modules found."); };
     };
 
     public Properties getJarProperties(String fileName)
@@ -192,7 +184,7 @@ public class ModuleManager
                 jarProps.put(name.toString(), jarAttr.getValue(name));
             };
             //jarProps.list(System.out); // DEBUG OUTPUT
-        } catch (IOException e) { sysTools.logMsg(e.getMessage()); };
+        } catch (IOException e) { sysTools.logMsg("E", e.getMessage()); };
 
         return jarProps;
     };

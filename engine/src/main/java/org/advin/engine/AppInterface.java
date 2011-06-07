@@ -11,7 +11,7 @@ public class AppInterface implements IAppInterface
     @Override
     public void invokeMethod(String param) { System.out.println("Invoked method - ["+ param +"]"); }
     @Override
-    public void logMsg(String message) { Main.sysTools.logMsg(message); };
+    public void logMsg(String info, String message) { Main.sysTools.logMsg(info, message); };
     @Override
     public IAdvinModule getModule(String name)
     {

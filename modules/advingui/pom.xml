@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<project>
+    <name>AdvinGUI</name>
+    <version>1.0</version>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.advin.modules</groupId>
+    <artifactId>advingui</artifactId>
+
+    <parent>
+        <artifactId>modules</artifactId>
+        <groupId>org.advin</groupId>
+        <version>1.0</version>
+    </parent>
+
+    <build>
+        <finalName>advingui</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.0.2</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.2</version>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <AIModule-Class>org.advin.modules.advingui.AdvinGUI</AIModule-Class>
+                            <AIModule-Version>${project.version}</AIModule-Version>
+                            <AIModule-Name>AdvinGUI</AIModule-Name>
+                            <AIModule-Info>Advin simple GUI</AIModule-Info>
+                            <AIModule-Type>GUI</AIModule-Type>
+                            <AIModule-Visual>true</AIModule-Visual>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.jgoodies</groupId>
+            <artifactId>forms</artifactId>
+            <version>1.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.8.2</version>
+        </dependency>
+    </dependencies>
+</project>

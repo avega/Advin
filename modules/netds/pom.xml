@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <project>
-    <name>NetServer</name>
+    <name>NetDS</name>
     <version>1.0</version>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.advin.modules</groupId>
-    <artifactId>netserver</artifactId>
+    <artifactId>netds</artifactId>
 
     <parent>
         <artifactId>modules</artifactId>
@@ -13,7 +13,7 @@
     </parent>
 
     <build>
-        <finalName>netserver</finalName>
+        <finalName>netds</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -31,11 +31,12 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
-                            <AIModule-Class>org.advin.modules.netserver.NetServer</AIModule-Class>
+                            <AIModule-Class>org.advin.modules.netds.NetDS</AIModule-Class>
                             <AIModule-Version>${project.version}</AIModule-Version>
-                            <AIModule-Name>NetServer</AIModule-Name>
-                            <AIModule-Info>Network Server (Handle network connections)</AIModule-Info>
-                            <AIModule-Type>NetWork</AIModule-Type>
+                            <AIModule-Name>NetDS</AIModule-Name>
+                            <AIModule-Info>Network DataSource</AIModule-Info>
+                            <AIModule-Type>DataSource</AIModule-Type>
+                            <AIModule-Visual>false</AIModule-Visual>
                         </manifestEntries>
                     </archive>
                 </configuration>
@@ -47,8 +48,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.7</version>
-            <scope>test</scope>
+            <version>4.8.2</version>
         </dependency>
     </dependencies>
 </project>

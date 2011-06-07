@@ -36,6 +36,7 @@
     </dependencies>
 
     <modules>
-        <module>netserver</module>
+        <module>netds</module>
+        <module>advingui</module>
     </modules>
 </project>

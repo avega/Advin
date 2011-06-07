@@ -4,6 +4,6 @@ public interface IAppInterface
 {
     String getAppVersion();
     void invokeMethod(String param);
-    void logMsg(String message);
+    void logMsg(String info, String message);
     IAdvinModule getModule(String name);
 };

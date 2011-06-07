@@ -15,6 +15,11 @@ public class Main
     {
         //sysTools.logMsg("[?] CLASSPATH: "+ sysTools.getCP());
         // Load module files
+        if (System.getProperty("os.name").startsWith("Mac"))
+        {
+            System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Advin");
+        };
+
         modManager.modPath = sysTools.getArgValue(args, "modpath");
         if (modManager.modPath.isEmpty()) { modManager.modPath = "modules"; };
         modManager.loadModules();
@@ -25,50 +30,51 @@ public class Main
             System.out.println("");
             for (ModuleContainer aModList: modManager.modList)
             {
-                sysTools.logMsg("[*] Module: " + aModList.getModuleName() +" ver. "+ aModList.getModuleVersion());
-                sysTools.logMsg("[*] " + aModList.getModuleName() +" (" + aModList.getModuleInfo() +")");
-                sysTools.logMsg("[*] Visual: " + aModList.isVisual() +" / Type: " + aModList.getModuleType());
-                sysTools.logMsg("[*] ---");
+                sysTools.logMsg("*", "Module: " + aModList.getModuleName() +" ver. "+ aModList.getModuleVersion());
+                sysTools.logMsg("*", aModList.getModuleName() +" (" + aModList.getModuleInfo() +")");
+                sysTools.logMsg("*", "Visual: " + aModList.isVisual() +" / Type: " + aModList.getModuleType());
+                sysTools.logMsg("*", "---");
             };
             // Init modules
             for (ModuleContainer aModList: modManager.modList)
             {
-                sysTools.logMsg("[!] Init: " + aModList.getModuleName());
-                aModList.moduleClass.initModule(appIFace);
+                sysTools.logMsg("!", "Init: " + aModList.getModuleName());
+                aModList.moduleClass.am_init(appIFace);
             };
-            sysTools.logMsg("[!] ---");
+            sysTools.logMsg("!", "---");
             // Start modules
             for (ModuleContainer aModList: modManager.modList)
             {
-                sysTools.logMsg("[>] Start: " + aModList.getModuleName());
-                aModList.moduleClass.startModule();
+                sysTools.logMsg(">","Activate: " + aModList.getModuleName());
+                aModList.moduleClass.am_activate();
             };
-            sysTools.logMsg("[>] ---");
+            sysTools.logMsg(">", "---");
             // Start application loop
+            // TODO: change loop to listen events way
             boolean allDone = false;
 
             try
             {
-                while (!allDone) // wait until all modules set isActive to false
+                while (!allDone) // wait until all modules set am_isActive to false
                 {
                     allDone = true;
                     for (ModuleContainer aModList: modManager.modList)
                     {
-                        if (aModList.moduleClass.isActive()) { allDone = false; };
+                        if (aModList.moduleClass.am_isActive()) { allDone = false; };
                     };
-                    try { Thread.sleep(500); } catch (InterruptedException e) { System.out.println(e.getMessage()); };
+                    try { Thread.sleep(1); } catch (InterruptedException e) { System.out.println(e.getMessage()); };
                 };
             }
-            catch (Exception E) { sysTools.logMsg("[E] Error: "+ E.getLocalizedMessage()); }
-            finally { sysTools.logMsg("[M] All modules done."); };
+            catch (Exception E) { sysTools.logMsg("E", "Error: "+ E.getLocalizedMessage()); }
+            finally { sysTools.logMsg("M", "No active modules."); };
 
             // Done modules
             for (ModuleContainer aModList: modManager.modList)
             {
-                sysTools.logMsg("[.] Done: " + aModList.getModuleName());
-                aModList.moduleClass.doneModule();
+                sysTools.logMsg(".", "Done: " + aModList.getModuleName());
+                aModList.moduleClass.am_done();
             };
-            sysTools.logMsg("[.] ---");
+            sysTools.logMsg(".", "---");
         };
     };
 };
